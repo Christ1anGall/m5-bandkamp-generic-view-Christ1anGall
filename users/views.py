@@ -1,31 +1,19 @@
-from rest_framework.views import APIView, Request, Response, status
+from rest_framework.views import Request, Response, status
 from .models import User
-from rest_framework_simplejwt.authentication import JWTAuthentication
 from .serializers import UserSerializer
 from django.shortcuts import get_object_or_404
-from .permissions import IsAccountOwner
-from utils.common_views import PostCommonView
+from utils.common_views import GetPostCommonsView
+from utils.detail_common_views import OnlyGetDetailView
 
 
-class UserView(PostCommonView):
+class UserView(GetPostCommonsView):
     view_serializer = UserSerializer
 
 
-class UserDetailView(APIView):
-    authentication_classes = [JWTAuthentication]
-    permission_classes = [IsAccountOwner]
+class UserDetailView(OnlyGetDetailView):
 
-    def get(self, request: Request, pk: int) -> Response:
-        """
-        Obtençao de usuário
-        """
-        user = get_object_or_404(User, pk=pk)
-
-        self.check_object_permissions(request, user)
-
-        serializer = UserSerializer(user)
-
-        return Response(serializer.data)
+    view_serializer = UserSerializer
+    view_queryset = User.objects.all()
 
     def patch(self, request: Request, pk: int) -> Response:
         """

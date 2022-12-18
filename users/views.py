@@ -8,7 +8,7 @@ from rest_framework_simplejwt.authentication import JWTAuthentication
 
 
 class UserView(generics.ListCreateAPIView):
-
+    queryset = User.objects.all()
     serializer_class = UserSerializer
 
 

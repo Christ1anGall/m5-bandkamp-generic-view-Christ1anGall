@@ -2,19 +2,19 @@ from rest_framework.views import Request, Response, status
 from .models import User
 from .serializers import UserSerializer
 from django.shortcuts import get_object_or_404
-from utils.common_views import GetPostCommonsView
-from utils.detail_common_views import (
-    OnlyGetDetailView,
-    OnlyPatchDetailView,
-    OnlyDeleteDetailView,
-)
+from rest_framework import generics
+from .permissions import IsAccountOwner
+from rest_framework_simplejwt.authentication import JWTAuthentication
 
 
-class UserView(GetPostCommonsView):
-    view_serializer = UserSerializer
+class UserView(generics.ListCreateAPIView):
+
+    serializer_class = UserSerializer
 
 
-class UserDetailView(OnlyGetDetailView, OnlyPatchDetailView, OnlyDeleteDetailView):
+class UserDetailView(generics.RetrieveUpdateDestroyAPIView):
+    authentication_classes = [JWTAuthentication]
+    permission_classes = [IsAccountOwner]
 
-    view_serializer = UserSerializer
-    view_queryset = User.objects.all()
+    serializer_class = UserSerializer
+    queryset = User.objects.all()
